@@ -26,5 +26,5 @@ public class CityWeather {
     private double visibility;
 
     private String base;
-    private String cod;
+    private int cod;
 }

@@ -9,6 +9,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -33,52 +34,65 @@ public class OpenWeatherMapClient {
         return this;
     }
 
-    public CityWeather getCurrentWeatherByCityID(int id) throws OpenWeatherMapApiException {
+    public CityWeather getCurrentWeatherByCityID(int id)
+            throws OpenWeatherMapApiException {
         WebTarget weatherTarget = apiTarget.path("weather")
                 .queryParam("id", id);
         return getCurrentWeather(weatherTarget);
     }
 
-    public CityWeather getCurrentWeatherByCity(String city) throws OpenWeatherMapApiException {
+    public CityWeather getCurrentWeatherByCity(String city)
+            throws OpenWeatherMapApiException {
         WebTarget weatherTarget = apiTarget.path("weather")
                 .queryParam("q", city);
         return getCurrentWeather(weatherTarget);
     }
 
-    public CityWeather getCurrentWeatherByCity(String city, String countryCode) throws OpenWeatherMapApiException {
+    public CityWeather getCurrentWeatherByCity(String city, String countryCode)
+            throws OpenWeatherMapApiException {
         WebTarget weatherTarget = apiTarget.path("weather")
                 .queryParam("q", String.format("%s,%s", city, countryCode));
         return getCurrentWeather(weatherTarget);
     }
 
-    public CityWeather getCurrentWeatherByZipCode(String zipCode, String countryCode) throws OpenWeatherMapApiException {
+    public CityWeather getCurrentWeatherByZipCode(String zipCode, String countryCode)
+            throws OpenWeatherMapApiException {
         WebTarget weatherTarget = apiTarget.path("weather")
                 .queryParam("zip", String.format("%s,%s", zipCode, countryCode));
         return getCurrentWeather(weatherTarget);
     }
 
-    public CityWeather getCurrentWeatherByCoordinates(double latitude, double longitude) throws OpenWeatherMapApiException {
+    public CityWeather getCurrentWeatherByCoordinates(double longitude, double latitude)
+            throws OpenWeatherMapApiException {
         WebTarget weatherTarget = apiTarget.path("weather")
-                .queryParam("lat", Double.toString(latitude))
-                .queryParam("lon", Double.toString(longitude));
+                .queryParam("lon", Double.toString(longitude))
+                .queryParam("lat", Double.toString(latitude));
         return getCurrentWeather(weatherTarget);
     }
 
-    public List<CityWeather> getCurrentWeatherForCitiesInBox(double latitudeA, double longitudeA, double latitudeB, double longitudeB) throws OpenWeatherMapApiException {
-        WebTarget weatherTarget = apiTarget.path("box/city")
-                .queryParam("bbox", latitudeA, longitudeA, latitudeB, longitudeB);
-        return getCurrentWeather(apiTarget, ListCityWeather.class).getList();
+    public List<CityWeather> getCurrentWeatherForCitiesInBox(
+            double longitudeUpperLeft,
+            double latitudeUpperLeft,
+            double longitudeLowerRight,
+            double latitudeLowerRight) throws OpenWeatherMapApiException {
+        WebTarget weatherTarget = apiTarget.path("box").path("city")
+                .queryParam("bbox", toStringList(
+                        longitudeUpperLeft,
+                        latitudeUpperLeft,
+                        longitudeLowerRight,
+                        latitudeLowerRight));
+        return getCurrentWeather(weatherTarget, ListCityWeather.class).getList();
     }
 
-    public List<CityWeather> getCurrentWeatherForCitiesInCircleCloseToPoint(double latitude, double longitude, int expectedNumberOfCities) throws OpenWeatherMapApiException {
-        if(expectedNumberOfCities<10 || expectedNumberOfCities>50){
-            throw new IllegalArgumentException("Expected number of cities need to be between 10 and 50. Passed value: "+expectedNumberOfCities);
-        }
+    public List<CityWeather> getCurrentWeatherForCitiesInCircleCloseToPoint(
+            double longitude,
+            double latitude,
+            int expectedNumberOfCities) throws OpenWeatherMapApiException {
         WebTarget weatherTarget = apiTarget.path("find")
-                .queryParam("lat", Double.toString(latitude))
                 .queryParam("lon", Double.toString(longitude))
+                .queryParam("lat", Double.toString(latitude))
                 .queryParam("cnt", Integer.toString(expectedNumberOfCities));
-        return getCurrentWeather(apiTarget, ListCityWeather.class).getList();
+        return getCurrentWeather(weatherTarget, ListCityWeather.class).getList();
     }
 
     public List<CityWeather> getCurrentWeatherByCityID(int... ids) throws OpenWeatherMapApiException {
@@ -87,14 +101,18 @@ public class OpenWeatherMapClient {
         return getCurrentWeather(weatherTarget, ListCityWeather.class).getList();
     }
 
-    private String toStringList(int[] ids) {
+    private String toStringList(Object... objs) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; ; i++) {
-            sb.append(ids[i]);
-            if (i == ids.length-1)
+            sb.append(objs[i]);
+            if (i == objs.length-1)
                 return sb.toString();
             sb.append(",");
         }
+    }
+
+    private String toStringList(int[] ids) {
+        return toStringList((Object[]) Arrays.stream(ids).boxed().toArray( Integer[]::new ));
     }
 
     private CityWeather getCurrentWeather(WebTarget weatherTarget) throws OpenWeatherMapApiException {

@@ -1,11 +1,19 @@
 package com.github.mielek.api.client.openweathermap.model;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.xml.bind.annotation.XmlElement;
 
-@Data
+@ToString
+@EqualsAndHashCode
 public class Clouds {
     @XmlElement(name = "all")
-    public double cloudiness;
+    private double cloudiness1 = Double.NEGATIVE_INFINITY;
+    @XmlElement(name = "today")
+    private double cloudiness2 = Double.NEGATIVE_INFINITY;
+
+    public double getCloudiness() {
+        return cloudiness1>Double.NEGATIVE_INFINITY?cloudiness1:cloudiness2;
+    }
 }

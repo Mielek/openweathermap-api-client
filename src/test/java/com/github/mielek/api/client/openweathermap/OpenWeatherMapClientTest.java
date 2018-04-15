@@ -1,6 +1,9 @@
 package com.github.mielek.api.client.openweathermap;
 
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.github.mielek.api.client.openweathermap.model.CityWeather;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -23,7 +26,14 @@ public class OpenWeatherMapClientTest {
 
     @BeforeClass
     public static void setUp() {
-        webClient = ClientBuilder.newClient().register(JacksonJaxbJsonProvider.class);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+        //mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JaxbAnnotationModule());
+        JacksonJaxbJsonProvider jaxbJsonProvider = new JacksonJaxbJsonProvider();
+        jaxbJsonProvider.setMapper(mapper);
+
+        webClient = ClientBuilder.newClient().register(jaxbJsonProvider);
     }
 
     @AfterClass
@@ -95,8 +105,9 @@ public class OpenWeatherMapClientTest {
 
         CityWeather weather = null;
         try {
-            weather = client.getCurrentWeatherByCoordinates(40.73, -73.99);
+            weather = client.getCurrentWeatherByCoordinates(-73.99, 40.73);
         } catch (Exception e) {
+            e.printStackTrace();
             fail(e.getMessage());
         }
 
@@ -111,6 +122,7 @@ public class OpenWeatherMapClientTest {
         try {
             weathers = client.getCurrentWeatherByCityID(5106292, 5115985, NY_CITY_ID);
         } catch (Exception e) {
+            e.printStackTrace();
             fail(e.getMessage());
         }
 
@@ -118,6 +130,35 @@ public class OpenWeatherMapClientTest {
                 .extracting(cityWeather -> cityWeather.getId()).doesNotHaveDuplicates().containsOnly(5106292L, 5115985L, 0l + NY_CITY_ID);
         assertThat(weathers).extracting(cityWeather -> cityWeather.getName())
                 .doesNotHaveDuplicates().containsOnly("East New York", "West New York", "New York");
+    }
+
+    @Test
+    public void getCurrentWeatherForCitiesInBox(){
+        OpenWeatherMapClient client = new OpenWeatherMapClient(webClient, apiCode);
+
+        List<CityWeather> cityWeathers = null;
+        try {
+            cityWeathers = client.getCurrentWeatherForCitiesInBox(-74.109849, 40.673331, -73.890466, 40.807557);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        assertThat(cityWeathers).isNotNull().isNotEmpty().hasSize(1).extracting(cityWeather -> cityWeather.getName()).containsOnly(NY_CITY_NAME);
+    }
+
+    @Test
+    public void getCurrentWeatherForCitiesInCircle(){
+        OpenWeatherMapClient client = new OpenWeatherMapClient(webClient, apiCode);
+
+        List<CityWeather> cityWeathers = null;
+        try {
+            cityWeathers = client.getCurrentWeatherForCitiesInCircleCloseToPoint(-73.99, 40.73, 10);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+
+        assertThat(cityWeathers).isNotNull().isNotEmpty().hasSize(10);
     }
 
 
