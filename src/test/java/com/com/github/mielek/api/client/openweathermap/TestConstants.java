@@ -21,17 +21,6 @@ public class TestConstants {
         }
     }
 
-    public static void main() {
-        Client webClient = ClientBuilder.newClient();
-        OpenWeatherMapClient weatherClient = new OpenWeatherMapClient(webClient, getAPIKey());
-        try {
-            CityWeather cityWeather = weatherClient.getCurrentWeatherByCity("New York");
-            System.out.println(cityWeather);
-        } catch (OpenWeatherMapApiException e) {
-            System.err.println(e.getMessage());
-        }
-    }
-
     public static String getAPIKey(){
         return API_KEY;
     }
