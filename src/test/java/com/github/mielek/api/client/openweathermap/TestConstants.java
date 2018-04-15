@@ -1,4 +1,4 @@
-package com.com.github.mielek.api.client.openweathermap;
+package com.github.mielek.api.client.openweathermap;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,7 +1,6 @@
-package com.com.github.mielek.api.client.openweathermap;
+package com.github.mielek.api.client.openweathermap;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.github.mielek.api.client.openweathermap.OpenWeatherMapClient;
 import com.github.mielek.api.client.openweathermap.model.CityWeather;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -9,7 +8,6 @@ import org.junit.Test;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,7 +105,7 @@ public class OpenWeatherMapClientTest {
     }
 
     @Test
-    public void getCurrentWeatherForCitiesByListOfIdForWestEastAndCentralNewYork(){
+    public void getCurrentWeatherForCitiesByListOfIdForWestEastAndCentralNewYork() {
         OpenWeatherMapClient client = new OpenWeatherMapClient(webClient, apiCode);
         List<CityWeather> weathers = null;
         try {
@@ -117,7 +115,7 @@ public class OpenWeatherMapClientTest {
         }
 
         assertThat(weathers).isNotNull().isNotEmpty().hasSize(3)
-                .extracting(cityWeather -> cityWeather.getId()).doesNotHaveDuplicates().containsOnly(5106292L, 5115985L, 0l+NY_CITY_ID);
+                .extracting(cityWeather -> cityWeather.getId()).doesNotHaveDuplicates().containsOnly(5106292L, 5115985L, 0l + NY_CITY_ID);
         assertThat(weathers).extracting(cityWeather -> cityWeather.getName())
                 .doesNotHaveDuplicates().containsOnly("East New York", "West New York", "New York");
     }
