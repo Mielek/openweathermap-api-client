@@ -1,7 +1,7 @@
 # OpenWeatherMap API client project
 
 The OpenWeatherMap API client library provides an access to weather information's for Java EE applications.
-It uses 2.5 version of api. Library is using REST client specified in JAX-RS 2.1 specification.
+It uses 2.5 version of API. Library is using REST client specified in JAX-RS 2.1 specification.
 OpenWeatherMap client to properly function requires the client with registered JSON unmarshaller.
 Unmarshaller need to be compatible with Jaxb specification.
 
@@ -21,7 +21,7 @@ cd openweathermap-api-client
 mvn clean install -DskipTests
 ```
 Project does not contain OpenWeatherMap api key that's why invoking maven require `-DskipTests`.
-Running tests project test are described in [this](#invoking-project-tests) section.
+How to prepare project for running JUnit tests is described in [this](#invoking-project-tests) section.
 
 ### Usage
 
