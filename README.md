@@ -1,6 +1,6 @@
 # OpenWeatherMap API client project
 
-The OpenWeatherMap API client library provides access to weather information's for Java EE applications.
+The OpenWeatherMap API client library provides an access to weather information's for Java EE applications.
 It uses 2.5 version of api. Library is using REST client specified in JAX-RS 2.1 specification.
 OpenWeatherMap client to properly function requires the client with registered JSON unmarshaller.
 Unmarshaller need to be compatible with Jaxb specification.
