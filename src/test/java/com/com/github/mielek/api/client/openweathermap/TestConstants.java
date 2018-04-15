@@ -1,11 +1,5 @@
 package com.com.github.mielek.api.client.openweathermap;
 
-import com.github.mielek.api.client.openweathermap.OpenWeatherMapApiException;
-import com.github.mielek.api.client.openweathermap.OpenWeatherMapClient;
-import com.github.mielek.api.client.openweathermap.model.CityWeather;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
